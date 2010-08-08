@@ -12,6 +12,7 @@ int[] zAxis;
 int currentX = 0;
 int currentY = 0;
 int currentZ = 0;
+//these value were determined by taking readings from a resting position
 int oneGSensorValue = 400;
 float oneGMillivolt = oneGSensorValue * 4.9;
 
@@ -127,6 +128,13 @@ int zValue(String inString){
   return int(inString.substring(colonIndex + 1, inString.length() - 2));
 }
 
+/*
+This little method creates a running tally of all the incoming sensor readings
+and then, when it reaches the end of the array, it pops the first one of the beginning
+and inserts a new value in at the end...thus keeping a running tally of the last 400
+readings (it can be for any length array, that's just what it's set to for this project).
+This works a lot like an RRD graph where my inspiration came from.
+*/
 int[] insertValueIntoArray(int[] targetArray, int val, int pos, int maxLength){
    if(pos > (maxLength-1)){
      // if the pos == maxSize, shift the array to retain the original value
@@ -140,8 +148,16 @@ int[] insertValueIntoArray(int[] targetArray, int val, int pos, int maxLength){
    }
 }
 
+/*
+This conversion will vary from project to project
+and if you're project is relying on battery power
+the reading may need to be adjusted to give you true 
+one G as your battery power decreases.  All of this is due to
+the output of the X,Y, and Z sensors and their coorelation to the incoming voltage at VCC
+Check out the specs for the ADXL335 (part of the break out board from Sparkfun.com) here: http://www.analog.com/en/sensors/inertial-sensors/adxl335/products/product.html
+*/
 float gFromSensorValue(int sensorValue){
-  //convert analog value into a millivolts
+  //convert analog value into millivolts
   float mvValue = sensorValue * 4.9;
   return mvValue/oneGMillivolt;
 }
