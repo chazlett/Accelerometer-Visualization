@@ -21,7 +21,7 @@ int readingPos = 0; // the reading position in the array
 
 void setup(){
   smooth();
-  size(600, 300, OPENGL); 
+  size(1200, 600, OPENGL); 
 
   font = createFont(PFont.list()[270], 24);
   smallFont();
@@ -62,52 +62,59 @@ void serialEvent(Serial p){
 
 void draw()
 {
-  background(#FEFFFC);
-  drawGraph(xAxis, 100, color(#519050), "X - Axis");  
-  drawGraph(yAxis, 200, color(#708CDE), "Y - Axis");
-  drawGraph(zAxis, 300, color(#D38031), "Z - Axis");
+  background(#000000);
+  drawGraph(xAxis, 0, 600, color(#519050), "X - Axis");  
+  drawGraph(yAxis, 400, 600, color(#708CDE), "Y - Axis");
+  drawGraph(zAxis, 800, 600, color(#D38031), "Z - Axis");
   draw3d(currentX, currentY, currentZ);
 }
 
-void drawGraph(int[] arrToDraw, int yPos, color graphColor, String name){
+void drawGraph(int[] arrToDraw, int xPos, int yPos, color graphColor, String name){
   int arrLength = arrToDraw.length;
   stroke(graphColor);
   for (int x=0; x<arrLength - 1; x++) {
     float normalizedLine = norm(arrToDraw[x], 0.0, 700.0);
     float lineHeight = map(normalizedLine, 0.0, 1.0, 0.00, 85.0);
-    line(x, yPos, x, yPos - int(lineHeight));
-
+    line(xPos + x, yPos, xPos + x, yPos - int(lineHeight));
   }
+  String gString = nfc(gFromSensorValue(arrToDraw[arrLength - 2]), 2) + "Gs";
+  drawTitle(name, xPos + 10, yPos - 10, color(#FFFFFF), gString);
+}
+
+void drawTitle(String title, int xPos, int yPos, color textColor, String valueToDisplay){
+  String extraValue = "";
   pushStyle();
   smallFont();
-  stroke(#FFFFFF);
-  fill(#FFFFFF);
-  String gString = nfc(gFromSensorValue(arrToDraw[arrLength - 2]), 2);
-  text(name + " : " + gString + " Gs", 10, yPos - 10);
-  popStyle();
+  stroke(textColor);
+  fill(textColor);
+  if(valueToDisplay != ""){
+    extraValue = " : " + valueToDisplay;
+  }
+  text(title + extraValue, xPos, yPos);
+  popStyle();  
 }
+
 
 void draw3d(int currentX, int currentY, int currentZ){
   float normalizedX = norm(currentX, 0.0, 700.0);
   float normalizedY = norm(currentY, 0.0, 700.0);
   float normalizedZ = norm(currentZ, 0.0, 700.0);
-  float finalZ = map(normalizedZ, 0.0, 1.0, 300.00, 0.0);
-  float finalY = map(normalizedY, 0.0, 1.0, -3.5, 3.5);
-  float finalX = map(normalizedX, 0.0, 1.0, -3.5, 3.5);
+  float finalZ = map(normalizedZ, 0.0, 1.0, 0.00, 500.0);
+  float finalY = map(normalizedY, 0.0, 1.0, -4.0, 4.0);
+  float finalX = map(normalizedX, 0.0, 1.0, -4.0, 4.0);
 
   pushMatrix();
   ambientLight(102, 102, 102);
   lightSpecular(204, 204, 204);
   directionalLight(102, 102, 102, -1, -1, -1);
   shininess(1.0);
-  translate(500, finalZ);
-  rotateY(finalY + 1.0);
-  rotateZ(finalX);
-  fill(#E2E8D5);
-  noStroke();
-  fill(#B76F6F);
-  float heightWidth = finalX * 1.8;
-  box(65, 65, 50);
+  translate(width/2, finalZ);
+  rotateY(finalY);
+  rotateX(finalX);
+  stroke(#FFFFFF);
+  strokeWeight(3);
+  fill(#418CD6);
+  box(150, 150, 350);
   popMatrix();
 }
 
